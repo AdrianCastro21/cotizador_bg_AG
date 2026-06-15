@@ -19,6 +19,15 @@ export interface PartidaInput {
   calibreAcetato: number;
   tieneRealce: boolean;
   numeroRealces: number;
+  pegadoManual?: boolean;
+  encintado?: boolean;
+  encintadoAncho?: number;
+  encintadoLargo?: number;
+  laminacion?: boolean;
+  estampado?: boolean;
+  ventanaAncho?: number;
+  ventanaLargo?: number;
+  costoPlacasExtra?: number;
 }
 
 export interface PartidaIngenieria {

@@ -27,7 +27,7 @@ describe('CotizadorService', () => {
       calibre: 12,
       tintasFrente: 1,
       tintasReverso: 0,
-      barniz: 'Ninguno',
+      barniz: 'N/A',
       tipoPegue: 'Pegue Lineal',
       empaque: 'Corrugado',
       destino: 'LOCAL',
@@ -59,7 +59,7 @@ describe('CotizadorService', () => {
       calibre: 12,
       tintasFrente: 1,
       tintasReverso: 0,
-      barniz: 'Ninguno',
+      barniz: 'N/A',
       tipoPegue: 'Pegue Lineal',
       empaque: 'Corrugado',
       destino: 'LOCAL',
@@ -116,5 +116,54 @@ describe('CotizadorService', () => {
     service.recalcularComisionesYUtilidades(mockCalc);
     expect(mockCalc.comisionPercent).toBe(0);
     expect(mockCalc.comisionMonto).toBe(0);
+  });
+
+  it('debe calcular correctamente costo de ventana de acetato dinámico y costo de placas extra por realce/estampado', () => {
+    const input: PartidaInput = {
+      id: 1,
+      cliente: 'Test Cliente',
+      descripcion: 'Caja Ventana Placas',
+      frente: 15,
+      fondo: 10,
+      alto: 5,
+      tipoCaja: 'Plegadiza',
+      sustrato: 'PRC',
+      calibre: 12,
+      tintasFrente: 1,
+      tintasReverso: 0,
+      barniz: 'N/A',
+      tipoPegue: 'Pegue Lineal',
+      empaque: 'Corrugado',
+      destino: 'LOCAL',
+      cantidades: [5000, 0, 0, 0, 0],
+      tieneVentana: true,
+      calibreAcetato: 3,
+      ventanaAncho: 8,
+      ventanaLargo: 12,
+      tieneRealce: true,
+      numeroRealces: 1,
+      costoPlacasExtra: 1500
+    };
+
+    const ing = service.calcularIngenieriaSugerida(input);
+    
+    // Escenario A: Con ventana de 8x12 y placa de 1500
+    const calculosA = service.calcularPartida(input, ing, 10);
+    const calcA = calculosA[0];
+    
+    // Debe incluir el costo de placas de impresión estándar + el extra
+    const costoPlacaStd = 1 * 180.00; // 1 tinta frente * $180
+    expect(calcA.costoPlacas).toBe(costoPlacaStd + 1500);
+
+    // Escenario B: Cambiando dimensiones de la ventana a 10x10
+    const inputB = { ...input, ventanaAncho: 10, ventanaLargo: 10 };
+    const calculosB = service.calcularPartida(inputB, ing, 10);
+    const calcB = calculosB[0];
+
+    // Para 8x12 (96 cm2) el costo de ventana es: 5000 * 0.0096 * 3 * 1.8 = 259.20
+    // Para 10x10 (100 cm2) el costo de ventana es: 5000 * 0.0100 * 3 * 1.8 = 270.00
+    // La diferencia en costo variable total debe ser exactamente de $10.80 MXN
+    const diff = calcB.costoVariableTotal - calcA.costoVariableTotal;
+    expect(diff).toBeCloseTo(10.80, 2);
   });
 });

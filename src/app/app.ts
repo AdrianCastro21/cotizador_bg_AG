@@ -24,6 +24,37 @@ export class App implements OnInit {
   dbFlautas = DB_FLAUTAS;
   dbFletes = DB_FLETES;
   costosProcesos = COSTOS_PROCESOS;
+  calibresDisponibles = [
+    11, 11.4, 12, 12.4, 13, 13.4, 14, 14.4, 14.6, 15, 15.7, 16, 16.1, 17.1, 
+    17.3, 18, 18.1, 18.3, 19.3, 20, 20.1, 20.5, 21.3, 22, 22.2, 24, 24.2, 180, 205
+  ];
+  barnicesDisponibles = [
+    'Offset brillante',
+    'Termosellante',
+    'UV',
+    'Mate',
+    'UV y Mate',
+    'Soft Touch',
+    'Azotech',
+    'UV y Azotech',
+    'Mate y Azotech',
+    'UV y Mate y Azotech',
+    'Soft Touch y Azotech',
+    'Brillo XX y Azotech',
+    'Antigraso',
+    'UV y Antigraso',
+    'Brillo XX',
+    'N/A'
+  ];
+  empaquesDisponibles = [
+    'Corrugado',
+    'Flejado',
+    'Flejado con Kraft',
+    'Pallet',
+    'Corrugado ESP',
+    'Flejado ESP',
+    'Flejado Kraft ESP'
+  ];
 
   // Notificaciones
   toast = signal<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
@@ -98,7 +129,7 @@ export class App implements OnInit {
       calibre: 12,
       tintasFrente: 1,
       tintasReverso: 0,
-      barniz: 'Ninguno',
+      barniz: 'N/A',
       tipoPegue: 'Pegue Lineal',
       empaque: 'Corrugado',
       destino: 'LOCAL',
@@ -106,7 +137,16 @@ export class App implements OnInit {
       tieneVentana: false,
       calibreAcetato: 3,
       tieneRealce: false,
-      numeroRealces: 0
+      numeroRealces: 0,
+      pegadoManual: false,
+      encintado: false,
+      encintadoAncho: 0,
+      encintadoLargo: 0,
+      laminacion: false,
+      estampado: false,
+      ventanaAncho: 0,
+      ventanaLargo: 0,
+      costoPlacasExtra: 0
     };
   }
 

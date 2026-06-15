@@ -140,13 +140,16 @@ export class CotizadorService {
       // Fijo
       const costoImpresionFijo = tieneImpresion ? COSTOS_PROCESOS.impresion.preparacionFija : 0;
       const totalTintas = input.tintasFrente + input.tintasReverso;
-      const costoPlacas = tieneImpresion ? (totalTintas * COSTOS_PROCESOS.impresion.costoPlacaUnitario) : 0;
+      let costoPlacas = tieneImpresion ? (totalTintas * COSTOS_PROCESOS.impresion.costoPlacaUnitario) : 0;
+      if (input.tieneRealce || input.estampado) {
+        costoPlacas += input.costoPlacasExtra || 0;
+      }
       // Variable (Barniz y Tintas)
       const areaImpresionM2 = totalHojas * (ing.anchoBobina / 100) * (ing.hilo / 100);
       const costoTiroImpresion = totalHojas * (COSTOS_PROCESOS.impresion.costoTiroMillar / 1000);
       
       let costoBarniz = 0;
-      if (input.barniz && input.barniz !== 'Ninguno') {
+      if (input.barniz && input.barniz !== 'N/A') {
         // En un caso real, el costo de barniz por M2 se busca en base de datos.
         // Asignamos una tarifa de $1.50 MXN/m² para barnices estándar, y $3.50 MXN/m² para UV
         const tarifaBarniz = input.barniz.toLowerCase().includes('uv') ? 3.50 : 1.50;
@@ -165,8 +168,10 @@ export class CotizadorService {
       // 9. Costo de Ventana (Acetato)
       let costoVentana = 0;
       if (input.tieneVentana) {
-        // El costo de ventana se calcula en base al área de acetato (estimamos 10x10 cm por caja)
-        const areaAcetatoM2 = qty * 0.01; // 100 cm2 por pieza
+        // Usar dimensiones reales ingresadas por el vendedor; de lo contrario, por defecto 10x10 cm
+        const anchoVentana = input.ventanaAncho ?? 10;
+        const largoVentana = input.ventanaLargo ?? 10;
+        const areaAcetatoM2 = qty * (anchoVentana / 100) * (largoVentana / 100);
         const costoAcetatoM2 = input.calibreAcetato * 1.80; // Tarifa basada en el calibre
         costoVentana = areaAcetatoM2 * costoAcetatoM2;
       }
